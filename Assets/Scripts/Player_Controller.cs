@@ -7,17 +7,22 @@ public class Player_Controller : MonoBehaviour {
 
     public float speed;
     public Text countText;
+    public Text scoreText;
     public Text winText;
+
+    public GameObject Player;
 
     private Rigidbody rb;
     private int count;
+    private int score;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
-        SetCountText();
-        winText.text = "";
+        score = 0;
+        SetAllText();
+        //winText.text = "";
     }
 
     void Update()
@@ -43,16 +48,42 @@ public class Player_Controller : MonoBehaviour {
         {
             other.gameObject.SetActive(false);
             count++;
-            SetCountText();
+            score++;
+            SetAllText();
+        }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            other.gameObject.SetActive(false);
+            score--;
+            SetAllText();
+        }
+
+        if (count == 12)
+        {
+            transform.position = new Vector3(16.0f, Player.transform.position.y, 8.0f);
         }
     }
 
-    void SetCountText()
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy Wall"))
+        {
+            score--;
+            SetAllText();
+        }
+    }
+
+    void SetAllText()
     {
         countText.text = "Count: " + count.ToString();
-        if (count >= 12)
+        scoreText.text = "Score: " + score.ToString();
+        if (count >= 25)
         {
-            winText.text = "You Win!";
+            winText.text = "You won with a score of: " + score.ToString();
+        }
+        else
+        {
+            winText.text = "";
         }
     }
 }
